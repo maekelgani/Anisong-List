@@ -19,6 +19,7 @@ class Song extends Model
         'link_video',
         'tahun_rilis',
         'peringkat',
+        'cover_image',
     ];
 
     public function franchise()

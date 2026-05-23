@@ -7,19 +7,28 @@ use App\Models\Song;
 use App\Models\Franchise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class SongController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Song::with('franchise')->orderBy('peringkat');
+        return redirect()->route('admin.songs.type', 'opening');
+    }
 
-        if ($request->has('tipe') && $request->tipe != '') {
-            $query->where('tipe', $request->tipe);
+    public function indexByType($tipe)
+    {
+        $allowedTypes = ['opening', 'ending', 'movie'];
+        if (!in_array($tipe, $allowedTypes)) {
+            $tipe = 'opening';
         }
 
-        $songs = $query->paginate(20);
-        return view('admin.songs.index', compact('songs'));
+        $songs = Song::with('franchise')
+            ->where('tipe', $tipe)
+            ->orderBy('peringkat')
+            ->get();
+
+        return view('admin.songs.index', compact('songs', 'tipe'));
     }
 
     public function create()
@@ -38,9 +47,20 @@ class SongController extends Controller
             'tahun_rilis' => 'required|integer',
         ]);
 
-        Song::create($request->all());
+        $data = $request->all();
+        if ($request->hasFile('cover_image')) {
+            $data['cover_image'] = $request->file('cover_image')->store('covers', 'public');
+        }
 
-        return redirect()->route('admin.songs.index')->with('success', 'Lagu berhasil ditambahkan.');
+        DB::transaction(function () use ($data) {
+            Song::where('tipe', $data['tipe'])
+                ->where('peringkat', '>=', $data['peringkat'])
+                ->increment('peringkat');
+            
+            Song::create($data);
+        });
+
+        return redirect()->route('admin.songs.type', $request->tipe)->with('success', 'Lagu berhasil ditambahkan.');
     }
 
     public function edit(Song $song)
@@ -61,25 +81,51 @@ class SongController extends Controller
 
         $oldRank = $song->peringkat;
         $newRank = $request->peringkat;
+        $oldType = $song->tipe;
+        $newType = $request->tipe;
 
-        DB::transaction(function () use ($song, $oldRank, $newRank, $request) {
-            if ($newRank != $oldRank) {
-                if ($newRank < $oldRank) {
-                    Song::whereBetween('peringkat', [$newRank, $oldRank - 1])->increment('peringkat');
-                } else {
-                    Song::whereBetween('peringkat', [$oldRank + 1, $newRank])->decrement('peringkat');
+        DB::transaction(function () use ($song, $oldRank, $newRank, $oldType, $newType, $request) {
+            $data = $request->all();
+            if ($request->hasFile('cover_image')) {
+                if ($song->cover_image) {
+                    Storage::disk('public')->delete($song->cover_image);
                 }
+                $data['cover_image'] = $request->file('cover_image')->store('covers', 'public');
             }
-            $song->update($request->all());
+
+            if ($oldType === $newType) {
+                if ($newRank != $oldRank) {
+                    if ($newRank < $oldRank) {
+                        Song::where('tipe', $newType)->whereBetween('peringkat', [$newRank, $oldRank - 1])->increment('peringkat');
+                    } else {
+                        Song::where('tipe', $newType)->whereBetween('peringkat', [$oldRank + 1, $newRank])->decrement('peringkat');
+                    }
+                }
+            } else {
+                Song::where('tipe', $oldType)->where('peringkat', '>', $oldRank)->decrement('peringkat');
+                Song::where('tipe', $newType)->where('peringkat', '>=', $newRank)->increment('peringkat');
+            }
+            
+            $song->update($data);
         });
 
-        return redirect()->route('admin.songs.index')->with('success', 'Lagu berhasil diperbarui.');
+        return redirect()->route('admin.songs.type', $request->tipe)->with('success', 'Lagu berhasil diperbarui.');
     }
 
     public function destroy(Song $song)
     {
-        $song->delete();
-        return redirect()->route('admin.songs.index')->with('success', 'Lagu berhasil dihapus.');
+        $tipe = $song->tipe;
+        if ($song->cover_image) {
+            Storage::disk('public')->delete($song->cover_image);
+        }
+        
+        DB::transaction(function () use ($song) {
+            $oldRank = $song->peringkat;
+            Song::where('tipe', $song->tipe)->where('peringkat', '>', $oldRank)->decrement('peringkat');
+            $song->delete();
+        });
+
+        return redirect()->route('admin.songs.type', $tipe)->with('success', 'Lagu berhasil dihapus.');
     }
 
     // Ajax Reorder
@@ -93,16 +139,17 @@ class SongController extends Controller
         $song = Song::findOrFail($request->id);
         $oldRank = $song->peringkat;
         $newRank = $request->new_rank;
+        $tipe = $song->tipe;
 
         if ($oldRank == $newRank) {
             return response()->json(['success' => true]);
         }
 
-        DB::transaction(function () use ($song, $oldRank, $newRank) {
+        DB::transaction(function () use ($song, $oldRank, $newRank, $tipe) {
             if ($newRank < $oldRank) {
-                Song::whereBetween('peringkat', [$newRank, $oldRank - 1])->increment('peringkat');
+                Song::where('tipe', $tipe)->whereBetween('peringkat', [$newRank, $oldRank - 1])->increment('peringkat');
             } else {
-                Song::whereBetween('peringkat', [$oldRank + 1, $newRank])->decrement('peringkat');
+                Song::where('tipe', $tipe)->whereBetween('peringkat', [$oldRank + 1, $newRank])->decrement('peringkat');
             }
             $song->update(['peringkat' => $newRank]);
         });

@@ -42,6 +42,7 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
     Route::resource('franchises', FranchiseController::class);
     
     Route::post('/songs/reorder', [SongController::class, 'reorder'])->name('songs.reorder');
+    Route::get('/songs/type/{tipe}', [SongController::class, 'indexByType'])->name('songs.type');
     Route::resource('songs', SongController::class);
     
     Route::get('/guest-rates', [GuestRateAdminController::class, 'index'])->name('guest_rates.index');
