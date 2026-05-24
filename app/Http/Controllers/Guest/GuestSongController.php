@@ -16,7 +16,9 @@ class GuestSongController extends Controller
 
     public function getSongs(Request $request)
     {
-        $query = Song::with('franchise')->orderBy('peringkat');
+        $query = Song::with('franchise')
+                     ->withAvg('guestRatingDetails', 'score_diberikan')
+                     ->orderBy('peringkat');
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
