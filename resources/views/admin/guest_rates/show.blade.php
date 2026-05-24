@@ -8,10 +8,20 @@
         </h1>
         <p class="text-gray-400 mt-1">Detail evaluasi dan penilaian dari sesi ini.</p>
     </div>
-    <a href="{{ route('admin.guest_rates.index') }}" class="bg-gray-800 text-gray-300 px-6 py-2 rounded-lg font-bold hover:bg-gray-700 hover:text-white transition-all flex items-center gap-2 border border-gray-700">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        Kembali
-    </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.guest_rates.index') }}" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2 border border-gray-700 px-4 py-2 rounded-lg hover:border-gray-500 hover:bg-gray-800">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Kembali
+            </a>
+            <form action="{{ route('admin.guest_rates.destroy', $guest_rate) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus sesi rating ini? Seluruh data riwayat skor di dalamnya akan ikut terhapus.')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="bg-red-500/10 text-red-500 px-4 py-2 rounded-lg font-bold border border-red-500/30 hover:bg-red-500 hover:text-white transition-all shadow-[0_0_10px_rgba(239,68,68,0.1)] hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Hapus Sesi
+                </button>
+            </form>
+        </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

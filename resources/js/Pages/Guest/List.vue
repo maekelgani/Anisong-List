@@ -3,6 +3,13 @@ import { Head, Link } from '@inertiajs/vue3';
 import { ref, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 
+const props = defineProps({
+    lastUpdate: {
+        type: String,
+        default: 'Belum ada update'
+    }
+});
+
 const songs = ref([]);
 const search = ref('');
 const typeFilter = ref('opening'); // Default to opening based on implementation plan
@@ -100,7 +107,11 @@ const getEmbedUrl = (url) => {
             
             <div class="mb-10 text-center">
                 <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 drop-shadow-[0_0_15px_rgba(157,0,255,0.4)]">Top 100 Ranking</h1>
-                <p class="text-gray-400">Temukan soundtrack anime terbaik favorit komunitas.</p>
+                <p class="text-gray-400 mb-6">Temukan soundtrack anime terbaik favorit komunitas.</p>
+                
+                <div class="inline-block bg-[#9D00FF]/10 border border-[#9D00FF]/30 px-4 py-2 rounded-full text-[#9D00FF] font-bold text-sm tracking-widest shadow-[0_0_15px_rgba(157,0,255,0.2)]">
+                    📅 Last List Update: {{ lastUpdate }}
+                </div>
             </div>
 
             <!-- Search & Pill Tabs (Filter) Bar -->

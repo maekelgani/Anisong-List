@@ -18,13 +18,22 @@ use App\Http\Middleware\AdminMiddleware;
 
 // Home / Portofolio
 Route::get('/', function () {
+    $lastUpdate = \App\Models\Song::max('updated_at');
+    $lastUpdateFormatted = $lastUpdate ? \Carbon\Carbon::parse($lastUpdate)->translatedFormat('d F Y') : 'Belum ada update';
     return Inertia::render('Guest/Home', [
         'canLogin' => Route::has('login'),
+        'lastUpdate' => $lastUpdateFormatted
     ]);
 })->name('home');
 
 // Lihat List Top 100
-Route::get('/list', [GuestSongController::class, 'index'])->name('guest.list');
+Route::get('/list', function() {
+    $lastUpdate = \App\Models\Song::max('updated_at');
+    $lastUpdateFormatted = $lastUpdate ? \Carbon\Carbon::parse($lastUpdate)->translatedFormat('d F Y') : 'Belum ada update';
+    return Inertia::render('Guest/List', [
+        'lastUpdate' => $lastUpdateFormatted
+    ]);
+})->name('guest.list');
 Route::get('/api/songs', [GuestSongController::class, 'getSongs']); // API endpoint for filtering/search
 
 // Rate List Wizard
@@ -47,6 +56,7 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
     
     Route::get('/guest-rates', [GuestRateAdminController::class, 'index'])->name('guest_rates.index');
     Route::get('/guest-rates/{guest_rate}', [GuestRateAdminController::class, 'show'])->name('guest_rates.show');
+    Route::delete('/guest-rates/{guest_rate}', [GuestRateAdminController::class, 'destroy'])->name('guest_rates.destroy');
 });
 
 

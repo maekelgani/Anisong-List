@@ -25,4 +25,13 @@ class GuestRateAdminController extends Controller
 
         return view('admin.guest_rates.show', compact('guest_rate', 'details'));
     }
+
+    public function destroy(GuestRatingSession $guest_rate)
+    {
+        // Because of constraints, it's safer to delete details first if cascade isn't set up
+        $guest_rate->details()->delete();
+        $guest_rate->delete();
+
+        return redirect()->route('admin.guest_rates.index')->with('success', 'Sesi rating guest berhasil dihapus.');
+    }
 }

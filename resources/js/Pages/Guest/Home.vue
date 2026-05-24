@@ -46,17 +46,13 @@ onUnmounted(() => {
                 <!-- <div class="inline-block mb-4 px-3 py-1 rounded-full border border-[#9D00FF]/30 bg-[#9D00FF]/10 text-[#9D00FF] text-xs font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(157,0,255,0.2)]">
                     V2.0 Neon Revamp
                 </div> -->
-                <h1 class="text-5xl md:text-7xl font-extrabold mb-8 tracking-tight leading-tight">
-                    Welcome to <br />
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-[#9D00FF] to-indigo-500 drop-shadow-[0_0_20px_rgba(157,0,255,0.5)]">
-                        Anime Song Management
-                    </span>
+                <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter drop-shadow-md">
+                    Top 100 <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#9D00FF] to-fuchsia-500">Anime Songs</span>
                 </h1>
-                <p class="text-lg md:text-xl text-gray-400 mb-12 leading-relaxed max-w-2xl mx-auto">
-                    Jelajahi dan berikan penilaian pada 100 soundtrack anime terbaik sepanjang masa. Berpartisipasilah dalam menyusun daftar putar legendaris komunitas kita.
+                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto font-medium">
+                    Temukan dan beri rating pada lagu tema anime favoritmu berdasarkan kualitas musik dan emosi yang dibawanya.
                 </p>
-
-                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link href="/list" class="px-8 py-4 bg-gray-900 border border-gray-700 text-white rounded-lg font-bold text-lg hover:border-[#9D00FF] hover:text-[#9D00FF] hover:shadow-[0_0_20px_rgba(157,0,255,0.4)] transition-all duration-300">
                         Lihat List Lagu
                     </Link>
