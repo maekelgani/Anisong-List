@@ -8,6 +8,9 @@ use App\Models\Franchise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Exports\SongsExport;
+use App\Imports\SongsImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SongController extends Controller
 {
@@ -155,5 +158,29 @@ class SongController extends Controller
         });
 
         return response()->json(['success' => true]);
+    }
+
+    public function export()
+    {
+        return Excel::download(new SongsExport(false), 'anisong_database.xlsx');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls|max:10240',
+        ]);
+
+        try {
+            Excel::import(new SongsImport, $request->file('file'));
+            return back()->with('success', 'Data lagu dari file berhasil diimpor!');
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Gagal mengimpor data: Pastikan format file sesuai. Error: ' . $e->getMessage()]);
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new SongsExport(true), 'template_import_songs.xlsx');
     }
 }

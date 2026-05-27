@@ -22,7 +22,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div>
                     <label class="block text-sm font-bold text-gray-400 mb-2">Franchise (Opsional)</label>
-                    <select name="franchise_id" class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+                    <select name="franchise_id" class="w-full bg-black border border-gray-700 text-white text-base rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
                         <option value="">-- Pilih Franchise --</option>
                         @foreach($franchises as $franchise)
                             <option value="{{ $franchise->id }}" {{ $song->franchise_id == $franchise->id ? 'selected' : '' }}>{{ $franchise->nama }}</option>
@@ -31,22 +31,22 @@
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-400 mb-2">Nama Anime <span class="text-xs text-gray-500 font-normal">(Jika tidak ada franchise)</span></label>
-                    <input type="text" name="anime_name" value="{{ old('anime_name', $song->anime_name) }}" class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="Contoh: Kimi no Na Wa">
+                    <input type="text" name="anime_name" value="{{ old('anime_name', $song->anime_name) }}" class="w-full bg-black border border-gray-700 text-white text-base rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="Contoh: Kimi no Na Wa">
                 </div>
                 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-gray-400 mb-2">Judul Lagu <span class="text-red-500">*</span></label>
-                    <input type="text" name="judul_lagu" value="{{ old('judul_lagu', $song->judul_lagu) }}" required class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="Contoh: Gurenge">
+                    <input type="text" name="judul_lagu" value="{{ old('judul_lagu', $song->judul_lagu) }}" required class="w-full bg-black border border-gray-700 text-white text-base rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="Contoh: Gurenge">
                 </div>
                 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-gray-400 mb-2">Penyanyi / Artis <span class="text-red-500">*</span></label>
-                    <input type="text" name="penyanyi" value="{{ old('penyanyi', $song->penyanyi) }}" required class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="Contoh: LiSA">
+                    <input type="text" name="penyanyi" value="{{ old('penyanyi', $song->penyanyi) }}" required class="w-full bg-black border border-gray-700 text-white text-base rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="Contoh: LiSA">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-bold text-gray-400 mb-2">Tipe <span class="text-red-500">*</span></label>
-                    <select name="tipe" required class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+                    <select name="tipe" required class="w-full bg-black border border-gray-700 text-white text-base rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
                         <option value="opening" {{ $song->tipe == 'opening' ? 'selected' : '' }}>Opening (OP)</option>
                         <option value="ending" {{ $song->tipe == 'ending' ? 'selected' : '' }}>Ending (ED)</option>
                         <option value="movie" {{ $song->tipe == 'movie' ? 'selected' : '' }}>Movie (MV)</option>
@@ -55,7 +55,7 @@
                 
                 <div>
                     <label class="block text-sm font-bold text-gray-400 mb-2">Tahun Rilis <span class="text-red-500">*</span></label>
-                    <input type="number" name="tahun_rilis" value="{{ old('tahun_rilis', $song->tahun_rilis) }}" required class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="2023">
+                    <input type="number" name="tahun_rilis" value="{{ old('tahun_rilis', $song->tahun_rilis) }}" required class="w-full bg-black border border-gray-700 text-white text-base rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="2023">
                 </div>
                 
                 <div>
@@ -65,12 +65,12 @@
                 
                 <div>
                     <label class="block text-sm font-bold text-gray-400 mb-2">Base Score</label>
-                    <input type="number" step="0.01" name="score" value="{{ old('score', $song->score) }}" class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+                    <input type="number" step="0.01" name="score" value="{{ old('score', $song->score) }}" class="w-full bg-black border border-gray-700 text-white text-base rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
                 </div>
                 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-gray-400 mb-2">Link Video YouTube Embed <span class="text-xs text-gray-500 font-normal">(Opsional)</span></label>
-                    <input type="url" name="link_video" value="{{ old('link_video', $song->link_video) }}" class="w-full bg-black border border-gray-700 text-gray-300 font-mono text-sm rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="https://www.youtube.com/embed/XXXXXX">
+                    <input type="url" name="link_video" value="{{ old('link_video', $song->link_video) }}" class="w-full bg-black border border-gray-700 text-gray-300 text-base font-mono rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="https://www.youtube.com/embed/XXXXXX">
                 </div>
 
                 <div class="md:col-span-2">

@@ -1,0 +1,16 @@
+{
+  "name": "Anime Song Management",
+  "short_name": "AniSong",
+  "description": "Anime Song Management System Admin Panel",
+  "start_url": "/admin/dashboard",
+  "display": "standalone",
+  "background_color": "#0D0D12",
+  "theme_color": "#0D0D12",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/x-icon"
+    }
+  ]
+}

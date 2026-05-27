@@ -51,8 +51,12 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
     Route::resource('franchises', FranchiseController::class);
     
     Route::post('/songs/reorder', [SongController::class, 'reorder'])->name('songs.reorder');
+    Route::get('/songs/export', [SongController::class, 'export'])->name('songs.export');
+    Route::post('/songs/import', [SongController::class, 'import'])->name('songs.import');
+    Route::get('/songs/template', [SongController::class, 'downloadTemplate'])->name('songs.template');
+    
     Route::get('/songs/type/{tipe}', [SongController::class, 'indexByType'])->name('songs.type');
-    Route::resource('songs', SongController::class);
+    Route::resource('songs', SongController::class)->except(['show']);
     
     Route::get('/guest-rates', [GuestRateAdminController::class, 'index'])->name('guest_rates.index');
     Route::get('/guest-rates/{guest_rate}', [GuestRateAdminController::class, 'show'])->name('guest_rates.show');
