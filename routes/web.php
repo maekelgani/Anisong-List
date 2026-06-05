@@ -11,6 +11,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\Admin\AdminUserController;
 
 // ----------------------------------------------------
 // GUEST PANEL (SPA VUE.JS + INERTIA)
@@ -47,6 +48,8 @@ Route::post('/rate/submit', [GuestRatingController::class, 'store'])->name('gues
 
 Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    Route::resource('users', AdminUserController::class)->only(['index', 'update']);
     
     Route::resource('franchises', FranchiseController::class);
     
