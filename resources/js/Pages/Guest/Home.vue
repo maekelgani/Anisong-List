@@ -14,29 +14,22 @@ const handleMouseMove = (e) => {
     mouseY.value = e.clientY;
 };
 
-// Mock Data
-const favoriteAnimes = ref([
-    { id: 1, title: 'Attack on Titan', cover_image: 'https://cdn.myanimelist.net/images/anime/10/47347l.jpg', studio: 'WIT Studio', release_year: 2013, rating: 9.5 },
-    { id: 2, title: 'Jujutsu Kaisen', cover_image: 'https://cdn.myanimelist.net/images/anime/1171/109222l.jpg', studio: 'MAPPA', release_year: 2020, rating: 9.2 },
-    { id: 3, title: 'Demon Slayer', cover_image: 'https://cdn.myanimelist.net/images/anime/1286/99889l.jpg', studio: 'ufotable', release_year: 2019, rating: 9.0 },
-    { id: 4, title: 'Steins;Gate', cover_image: 'https://cdn.myanimelist.net/images/anime/1935/127974l.jpg', studio: 'White Fox', release_year: 2011, rating: 9.8 },
-    { id: 5, title: 'Frieren', cover_image: 'https://cdn.myanimelist.net/images/anime/1015/138006l.jpg', studio: 'Madhouse', release_year: 2023, rating: 9.9 },
-]);
-
-const waifus = ref([
-    { id: 1, name: 'Makise Kurisu', anime_title: 'Steins;Gate', image_path: 'https://cdn.myanimelist.net/images/characters/11/286916.jpg' },
-    { id: 2, name: 'Rem', anime_title: 'Re:Zero', image_path: 'https://cdn.myanimelist.net/images/characters/2/303534.jpg' },
-    { id: 3, name: 'Zero Two', anime_title: 'Darling in the FranXX', image_path: 'https://cdn.myanimelist.net/images/characters/14/357608.jpg' },
-    { id: 4, name: 'Asuna', anime_title: 'Sword Art Online', image_path: 'https://cdn.myanimelist.net/images/characters/15/262053.jpg' },
-]);
-
-const favoriteMangas = ref([
-    { id: 1, title: 'Berserk', cover_image: 'https://cdn.myanimelist.net/images/manga/1/157897l.jpg', author: 'Kentaro Miura', release_year: 1989, status: 'Ongoing' },
-    { id: 2, title: 'Vagabond', cover_image: 'https://cdn.myanimelist.net/images/manga/1/259070l.jpg', author: 'Takehiko Inoue', release_year: 1998, status: 'Hiatus' },
-    { id: 3, title: 'One Piece', cover_image: 'https://cdn.myanimelist.net/images/manga/2/253146l.jpg', author: 'Eiichiro Oda', release_year: 1997, status: 'Ongoing' },
-    { id: 4, title: 'Monster', cover_image: 'https://cdn.myanimelist.net/images/manga/3/258224l.jpg', author: 'Naoki Urasawa', release_year: 1994, status: 'Completed' },
-    { id: 5, title: 'Vinland Saga', cover_image: 'https://cdn.myanimelist.net/images/manga/2/188925l.jpg', author: 'Makoto Yukimura', release_year: 2005, status: 'Ongoing' },
-]);
+const props = defineProps({
+    canLogin: Boolean,
+    lastUpdate: String,
+    favoriteAnimes: {
+        type: Array,
+        default: () => []
+    },
+    favoriteMangas: {
+        type: Array,
+        default: () => []
+    },
+    waifus: {
+        type: Array,
+        default: () => []
+    }
+});
 
 const loadingWaifus = ref(true);
 
@@ -49,31 +42,6 @@ const splitTextToSpans = (text) => {
 
 onMounted(() => {
     window.addEventListener('mousemove', handleMouseMove);
-
-    // Simulate Waifu loading skeleton
-    setTimeout(() => {
-        loadingWaifus.value = false;
-        
-        nextTick(() => {
-            // Re-trigger scrolltrigger for waifu cards after they load
-            gsap.utils.toArray('.waifu-card').forEach((card, i) => {
-                gsap.from(card, {
-                    scrollTrigger: {
-                        trigger: card,
-                        start: 'top bottom-=100',
-                        toggleActions: 'play none none reverse'
-                    },
-                    y: 100,
-                    rotationX: -45,
-                    opacity: 0,
-                    duration: 0.8,
-                    ease: 'back.out(1.7)',
-                    delay: i * 0.1
-                });
-            });
-            ScrollTrigger.refresh();
-        });
-    }, 1500);
 
     nextTick(() => {
         // Anime Title Animation
@@ -109,18 +77,6 @@ onMounted(() => {
                 ease: 'power3.out'
             });
         }
-
-        // Parallax background elements
-        gsap.to('.parallax-bg', {
-            scrollTrigger: {
-                trigger: 'body',
-                start: 'top top',
-                end: 'bottom bottom',
-                scrub: 1
-            },
-            y: (i, target) => -ScrollTrigger.maxScroll(window) * target.dataset.speed,
-            ease: 'none'
-        });
     });
 });
 
@@ -141,10 +97,6 @@ onUnmounted(() => {
                 background: `radial-gradient(circle 600px at ${mouseX}px ${mouseY}px, rgba(157, 0, 255, 0.15), transparent 80%)`
             }"
         ></div>
-
-        <!-- Parallax Background Blur Orbs -->
-        <div class="parallax-bg absolute top-1/4 left-10 w-96 h-96 bg-[#9D00FF]/10 rounded-full blur-[100px] -z-10 pointer-events-none" data-speed="0.2"></div>
-        <div class="parallax-bg absolute top-3/4 right-10 w-96 h-96 bg-pink-600/10 rounded-full blur-[100px] -z-10 pointer-events-none" data-speed="0.4"></div>
 
         <!-- Header / Nav (Optional, mostly clean for SPA) -->
         <nav class="relative z-10 w-full p-6 flex justify-between items-center max-w-7xl mx-auto">
@@ -209,7 +161,7 @@ onUnmounted(() => {
                         <!-- Set 1 -->
                         <div class="flex gap-4 md:gap-6 px-2 md:px-3">
                             <div v-for="anime in favoriteAnimes" :key="anime.id" class="w-64 md:w-80 h-96 relative rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] group border border-gray-800 hover:border-[#9D00FF] transition-colors duration-500 shrink-0">
-                                <img :src="anime.cover_image" :alt="anime.title" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none">
+                                <img :src="'/storage/' + anime.cover_image" :alt="anime.title" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none">
                                 <div class="absolute inset-0 bg-gradient-to-t from-[#0D0D12] via-[#0D0D12]/40 to-transparent"></div>
                                 <div class="absolute bottom-0 left-0 p-6 w-full">
                                     <h3 class="text-2xl font-bold text-white mb-1 drop-shadow-lg">{{ anime.title }}</h3>
@@ -223,7 +175,7 @@ onUnmounted(() => {
                         <!-- Set 2 (Duplicate for seamless loop) -->
                         <div class="flex gap-4 md:gap-6 px-2 md:px-3" aria-hidden="true">
                             <div v-for="anime in favoriteAnimes" :key="'dup-'+anime.id" class="w-64 md:w-80 h-96 relative rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] group border border-gray-800 hover:border-[#9D00FF] transition-colors duration-500 shrink-0">
-                                <img :src="anime.cover_image" :alt="anime.title" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none">
+                                <img :src="'/storage/' + anime.cover_image" :alt="anime.title" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none">
                                 <div class="absolute inset-0 bg-gradient-to-t from-[#0D0D12] via-[#0D0D12]/40 to-transparent"></div>
                                 <div class="absolute bottom-0 left-0 p-6 w-full">
                                     <h3 class="text-2xl font-bold text-white mb-1 drop-shadow-lg">{{ anime.title }}</h3>
@@ -243,36 +195,34 @@ onUnmounted(() => {
                 <div class="text-center mb-12">
                     <h2 class="manga-title text-4xl md:text-5xl font-black text-white inline-block perspective-[1000px]">Manga Favorite</h2>
                 </div>
-                <!-- Infinite Looping Carousel Container (Reverse) -->
+                <!-- Infinite Looping Carousel Container -->
                 <div class="relative w-full overflow-hidden z-10 py-8 flex group/carousel" style="-webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
-                    <!-- Marquee Track (Reverse) -->
-                    <div class="flex w-max animate-marquee-reverse group-hover/carousel:[animation-play-state:paused]">
+                    <!-- Marquee Track -->
+                    <div class="flex w-max animate-marquee group-hover/carousel:[animation-play-state:paused]">
                         <!-- Set 1 -->
                         <div class="flex gap-4 md:gap-6 px-2 md:px-3">
-                            <div v-for="(manga, index) in favoriteMangas" :key="manga.id" 
-                                 :class="['w-64 md:w-80 h-96 relative rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] group border border-gray-800 transition-all duration-500 shrink-0 hover:border-cyan-500', index === 2 ? 'opacity-70 hover:opacity-100' : '']">
-                                <img :src="manga.cover_image" :alt="manga.title" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none grayscale-[20%] group-hover:grayscale-0">
+                            <div v-for="manga in favoriteMangas" :key="manga.id" class="w-64 md:w-80 h-96 relative rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] group border border-gray-800 hover:border-[#9D00FF] transition-colors duration-500 shrink-0">
+                                <img :src="'/storage/' + manga.cover_image" :alt="manga.title" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none">
                                 <div class="absolute inset-0 bg-gradient-to-t from-[#0D0D12] via-[#0D0D12]/40 to-transparent"></div>
                                 <div class="absolute bottom-0 left-0 p-6 w-full">
                                     <h3 class="text-2xl font-bold text-white mb-1 drop-shadow-lg">{{ manga.title }}</h3>
-                                    <p class="text-sm text-cyan-400 font-semibold">{{ manga.author }} • {{ manga.release_year }}</p>
-                                    <div class="mt-2 inline-block px-2 py-1 bg-black/50 border border-gray-700 rounded text-xs text-gray-300 font-bold backdrop-blur-sm">
-                                        {{ manga.status }}
+                                    <p class="text-sm text-[#9D00FF] font-semibold">{{ manga.author }} • {{ manga.release_year }}</p>
+                                    <div class="mt-2 flex items-center gap-2">
+                                        <span class="text-yellow-400 font-bold">★ {{ manga.status }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Set 2 -->
+                        <!-- Set 2 (Duplicate for seamless loop) -->
                         <div class="flex gap-4 md:gap-6 px-2 md:px-3" aria-hidden="true">
-                            <div v-for="(manga, index) in favoriteMangas" :key="'dup-'+manga.id" 
-                                 :class="['w-64 md:w-80 h-96 relative rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] group border border-gray-800 transition-all duration-500 shrink-0 hover:border-cyan-500', index === 2 ? 'opacity-70 hover:opacity-100' : '']">
-                                <img :src="manga.cover_image" :alt="manga.title" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none grayscale-[20%] group-hover:grayscale-0">
+                            <div v-for="manga in favoriteMangas" :key="'dup-'+manga.id" class="w-64 md:w-80 h-96 relative rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] group border border-gray-800 hover:border-[#9D00FF] transition-colors duration-500 shrink-0">
+                                <img :src="'/storage/' + manga.cover_image" :alt="manga.title" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none">
                                 <div class="absolute inset-0 bg-gradient-to-t from-[#0D0D12] via-[#0D0D12]/40 to-transparent"></div>
                                 <div class="absolute bottom-0 left-0 p-6 w-full">
                                     <h3 class="text-2xl font-bold text-white mb-1 drop-shadow-lg">{{ manga.title }}</h3>
-                                    <p class="text-sm text-cyan-400 font-semibold">{{ manga.author }} • {{ manga.release_year }}</p>
-                                    <div class="mt-2 inline-block px-2 py-1 bg-black/50 border border-gray-700 rounded text-xs text-gray-300 font-bold backdrop-blur-sm">
-                                        {{ manga.status }}
+                                    <p class="text-sm text-[#9D00FF] font-semibold">{{ manga.author }} • {{ manga.release_year }}</p>
+                                    <div class="mt-2 flex items-center gap-2">
+                                        <span class="text-yellow-400 font-bold">★ {{ manga.status }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -281,37 +231,38 @@ onUnmounted(() => {
                 </div>
             </div>
 
-            <!-- Gallery of Waifu Section -->
-            <div class="w-full py-10 relative">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 inline-block">Gallery of Waifu</h2>
+            <!-- Waifu Favorite Section -->
+            <div class="w-full relative py-10 mt-[-2rem]">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl md:text-5xl font-black text-white inline-block perspective-[1000px]">Gallery of Waifu</h2>
                 </div>
-                
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
-                    <!-- Skeleton Loading -->
-                    <template v-if="loadingWaifus">
-                        <div v-for="i in 8" :key="'skel'+i" class="waifu-card aspect-[3/4] bg-gray-900 rounded-xl overflow-hidden relative border border-gray-800">
-                            <div class="absolute inset-0 bg-gray-800 animate-pulse"></div>
-                            <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-black to-transparent z-10">
-                                <div class="h-4 bg-gray-700 rounded w-3/4 mb-2 animate-pulse"></div>
-                                <div class="h-3 bg-gray-700 rounded w-1/2 animate-pulse"></div>
-                            </div>
-                        </div>
-                    </template>
-                    
-                    <!-- Actual Data -->
-                    <template v-else>
-                        <div v-for="waifu in waifus" :key="waifu.id" class="waifu-card aspect-[3/4] relative rounded-xl overflow-hidden group border border-gray-800 shadow-[0_5px_15px_rgba(0,0,0,0.5)] perspective-[1000px]">
-                            <div class="w-full h-full transition-transform duration-500 transform-style-3d group-hover:rotate-y-5">
-                                <img :src="waifu.image_path" :alt="waifu.name" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
-                                <div class="absolute bottom-0 left-0 p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                                    <h3 class="text-lg md:text-xl font-bold text-white leading-tight drop-shadow-md">{{ waifu.name }}</h3>
-                                    <p class="text-xs md:text-sm text-pink-400 font-semibold mt-1">{{ waifu.anime_title }}</p>
+                <!-- Infinite Looping Carousel Container -->
+                <div class="relative w-full overflow-hidden z-10 py-8 flex group/carousel" style="-webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+                    <!-- Marquee Track -->
+                    <div class="flex w-max animate-marquee group-hover/carousel:[animation-play-state:paused]">
+                        <!-- Set 1 -->
+                        <div class="flex gap-4 md:gap-6 px-2 md:px-3">
+                            <div v-for="waifu in waifus" :key="waifu.id" class="w-64 md:w-80 h-96 relative rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] group border border-gray-800 hover:border-[#9D00FF] transition-colors duration-500 shrink-0">
+                                <img :src="'/storage/' + waifu.image_path" :alt="waifu.name" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#0D0D12] via-[#0D0D12]/40 to-transparent"></div>
+                                <div class="absolute bottom-0 left-0 p-6 w-full">
+                                    <h3 class="text-2xl font-bold text-white mb-1 drop-shadow-lg">{{ waifu.name }}</h3>
+                                    <p class="text-sm text-[#9D00FF] font-semibold">{{ waifu.anime_title }}</p>
                                 </div>
                             </div>
                         </div>
-                    </template>
+                        <!-- Set 2 (Duplicate for seamless loop) -->
+                        <div class="flex gap-4 md:gap-6 px-2 md:px-3" aria-hidden="true">
+                            <div v-for="waifu in waifus" :key="'dup-'+waifu.id" class="w-64 md:w-80 h-96 relative rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] group border border-gray-800 hover:border-[#9D00FF] transition-colors duration-500 shrink-0">
+                                <img :src="'/storage/' + waifu.image_path" :alt="waifu.name" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#0D0D12] via-[#0D0D12]/40 to-transparent"></div>
+                                <div class="absolute bottom-0 left-0 p-6 w-full">
+                                    <h3 class="text-2xl font-bold text-white mb-1 drop-shadow-lg">{{ waifu.name }}</h3>
+                                    <p class="text-sm text-[#9D00FF] font-semibold">{{ waifu.anime_title }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

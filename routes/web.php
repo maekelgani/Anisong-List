@@ -5,8 +5,14 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FranchiseController;
 use App\Http\Controllers\Admin\SongController;
 use App\Http\Controllers\Admin\GuestRateAdminController;
+use App\Http\Controllers\Admin\FavoriteAnimeController;
+use App\Http\Controllers\Admin\FavoriteMangaController;
+use App\Http\Controllers\Admin\WaifuController;
 use App\Http\Controllers\Guest\GuestSongController;
 use App\Http\Controllers\Guest\GuestRatingController;
+use App\Models\FavoriteAnime;
+use App\Models\FavoriteManga;
+use App\Models\Waifu;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,9 +27,13 @@ use App\Http\Controllers\Admin\AdminUserController;
 Route::get('/', function () {
     $lastUpdate = \App\Models\Song::max('updated_at');
     $lastUpdateFormatted = $lastUpdate ? \Carbon\Carbon::parse($lastUpdate)->translatedFormat('d F Y') : 'Belum ada update';
+    
     return Inertia::render('Guest/Home', [
         'canLogin' => Route::has('login'),
-        'lastUpdate' => $lastUpdateFormatted
+        'lastUpdate' => $lastUpdateFormatted,
+        'favoriteAnimes' => FavoriteAnime::latest()->take(10)->get(),
+        'favoriteMangas' => FavoriteManga::latest()->take(10)->get(),
+        'waifus' => Waifu::latest()->take(10)->get(),
     ]);
 })->name('home');
 
@@ -64,6 +74,10 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
     Route::get('/guest-rates', [GuestRateAdminController::class, 'index'])->name('guest_rates.index');
     Route::get('/guest-rates/{guest_rate}', [GuestRateAdminController::class, 'show'])->name('guest_rates.show');
     Route::delete('/guest-rates/{guest_rate}', [GuestRateAdminController::class, 'destroy'])->name('guest_rates.destroy');
+
+    Route::resource('favorite-animes', FavoriteAnimeController::class)->except(['create', 'show', 'edit']);
+    Route::resource('favorite-mangas', FavoriteMangaController::class)->except(['create', 'show', 'edit']);
+    Route::resource('waifus', WaifuController::class)->except(['create', 'show', 'edit']);
 });
 
 
