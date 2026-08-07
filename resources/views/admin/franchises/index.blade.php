@@ -7,10 +7,20 @@
             <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 drop-shadow-md">Manajemen Franchise</h1>
             <p class="text-gray-400 mt-1">Kelola daftar franchise anime yang tersedia.</p>
         </div>
-        <button @click="openModal('create')" class="bg-[#9D00FF] text-white px-6 py-2 rounded-lg font-bold shadow-[0_0_15px_rgba(157,0,255,0.4)] hover:bg-[#b033ff] hover:shadow-[0_0_25px_rgba(157,0,255,0.8)] transition-all flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            Tambah Franchise
-        </button>
+        <div class="flex flex-wrap items-center gap-3">
+            <button @click="openModal('create')" class="bg-[#9D00FF] text-white px-6 py-2 rounded-lg font-bold shadow-[0_0_15px_rgba(157,0,255,0.4)] hover:bg-[#b033ff] hover:shadow-[0_0_25px_rgba(157,0,255,0.8)] transition-all flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Tambah Franchise
+            </button>
+            <form action="{{ route('admin.franchises.deleteAll') }}" method="POST" onsubmit="return confirm('Peringatan: Anda yakin ingin menghapus SELURUH franchise? Semua lagu yang terkait akan kehilangan tag franchisenya.');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="bg-red-500/10 text-red-500 px-4 py-2 rounded-lg font-bold border border-red-500/30 hover:bg-red-500 hover:text-white transition-all shadow-[0_0_10px_rgba(239,68,68,0.1)] hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Hapus Semua
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- Filter Form -->

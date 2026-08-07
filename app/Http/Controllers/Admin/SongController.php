@@ -196,4 +196,10 @@ class SongController extends Controller
     {
         return Excel::download(new SongsExport(true), 'template_import_songs.xlsx');
     }
+
+    public function deleteAll()
+    {
+        Song::query()->delete();
+        return back()->with('success', 'Semua lagu berhasil dihapus dari sistem.');
+    }
 }

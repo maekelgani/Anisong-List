@@ -57,4 +57,10 @@ class FranchiseController extends Controller
         $franchise->delete();
         return redirect()->route('admin.franchises.index')->with('success', 'Franchise berhasil dihapus.');
     }
+
+    public function deleteAll()
+    {
+        Franchise::query()->delete();
+        return back()->with('success', 'Semua franchise berhasil dihapus dari sistem. Lagu yang terkait tidak ikut terhapus, hanya akan kehilangan penanda franchise.');
+    }
 }

@@ -61,12 +61,14 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admi
     
     Route::resource('users', AdminUserController::class)->only(['index', 'update']);
     
+    Route::delete('/franchises/delete-all', [FranchiseController::class, 'deleteAll'])->name('franchises.deleteAll');
     Route::resource('franchises', FranchiseController::class);
     
     Route::post('/songs/reorder', [SongController::class, 'reorder'])->name('songs.reorder');
     Route::get('/songs/export', [SongController::class, 'export'])->name('songs.export');
     Route::post('/songs/import', [SongController::class, 'import'])->name('songs.import');
     Route::get('/songs/template', [SongController::class, 'downloadTemplate'])->name('songs.template');
+    Route::delete('/songs/delete-all', [SongController::class, 'deleteAll'])->name('songs.deleteAll');
     
     Route::get('/songs/type/{tipe}', [SongController::class, 'indexByType'])->name('songs.type');
     Route::resource('songs', SongController::class)->except(['show']);
