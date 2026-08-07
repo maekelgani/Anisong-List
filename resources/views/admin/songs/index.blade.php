@@ -39,6 +39,19 @@
     </a>
 </div>
 
+<!-- Filter Form -->
+<form method="GET" action="{{ route('admin.songs.type', $tipe) }}" class="mb-6 flex flex-col md:flex-row gap-4 bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, penyanyi, anime..." class="flex-1 bg-black/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-[#9D00FF] focus:ring-1 focus:ring-[#9D00FF] outline-none">
+    <select name="franchise_id" class="flex-1 bg-black/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-[#9D00FF] focus:ring-1 focus:ring-[#9D00FF] outline-none appearance-none">
+        <option value="">-- Semua Franchise --</option>
+        @foreach($franchises as $f)
+            <option value="{{ $f->id }}" {{ request('franchise_id') == $f->id ? 'selected' : '' }}>{{ $f->nama }}</option>
+        @endforeach
+    </select>
+    <button type="submit" class="bg-[#9D00FF] hover:bg-[#b033ff] text-white px-6 py-2 rounded-lg font-bold transition-all shadow-[0_0_10px_rgba(157,0,255,0.4)]">Filter</button>
+    <a href="{{ route('admin.songs.type', $tipe) }}" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-6 py-2 rounded-lg font-bold transition-all flex items-center justify-center">Reset</a>
+</form>
+
 <!-- Table Container (Desktop) -->
 <div class="hidden md:block bg-gray-900/60 backdrop-blur-md border border-gray-800 rounded-2xl shadow-xl overflow-hidden">
     <div class="overflow-x-auto">
@@ -59,12 +72,16 @@
                     <td class="p-4 flex items-center justify-center gap-3">
                         <span class="font-black text-2xl text-transparent bg-clip-text bg-gradient-to-br from-gray-300 to-gray-600 group-hover:from-[#9D00FF] group-hover:to-[#b033ff] w-10 text-center transition-all drop-shadow-md">{{ $song->peringkat }}</span>
                         <div class="flex flex-col gap-1">
-                            <button onclick="reorder({{ $song->id }}, {{ max(1, $song->peringkat - 1) }})" class="w-6 h-6 rounded bg-gray-800 text-gray-400 flex items-center justify-center hover:bg-[#9D00FF] hover:text-white hover:shadow-[0_0_10px_rgba(157,0,255,0.6)] transition-all" title="Naik Rank">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                            </button>
-                            <button onclick="reorder({{ $song->id }}, {{ $song->peringkat + 1 }})" class="w-6 h-6 rounded bg-gray-800 text-gray-400 flex items-center justify-center hover:bg-[#9D00FF] hover:text-white hover:shadow-[0_0_10px_rgba(157,0,255,0.6)] transition-all" title="Turun Rank">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </button>
+                            @if(!request('search') && !request('franchise_id'))
+                                <button onclick="reorder({{ $song->id }}, {{ max(1, $song->peringkat - 1) }})" class="w-6 h-6 rounded bg-gray-800 text-gray-400 flex items-center justify-center hover:bg-[#9D00FF] hover:text-white hover:shadow-[0_0_10px_rgba(157,0,255,0.6)] transition-all" title="Naik Rank">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                </button>
+                                <button onclick="reorder({{ $song->id }}, {{ $song->peringkat + 1 }})" class="w-6 h-6 rounded bg-gray-800 text-gray-400 flex items-center justify-center hover:bg-[#9D00FF] hover:text-white hover:shadow-[0_0_10px_rgba(157,0,255,0.6)] transition-all" title="Turun Rank">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                            @else
+                                <span class="text-xs text-gray-600 text-center">-</span>
+                            @endif
                         </div>
                     </td>
                     <td class="p-4">
@@ -126,12 +143,14 @@
             </div>
             <!-- Actions (Large Touch Targets) -->
             <div class="mt-4 flex gap-2 border-t border-gray-800 pt-4">
-                <button onclick="reorder({{ $song->id }}, {{ max(1, $song->peringkat - 1) }})" class="flex-1 bg-gray-800/50 hover:bg-[#9D00FF]/20 text-gray-400 hover:text-[#9D00FF] py-2 rounded-xl flex items-center justify-center transition-colors min-h-[44px]">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                </button>
-                <button onclick="reorder({{ $song->id }}, {{ $song->peringkat + 1 }})" class="flex-1 bg-gray-800/50 hover:bg-[#9D00FF]/20 text-gray-400 hover:text-[#9D00FF] py-2 rounded-xl flex items-center justify-center transition-colors min-h-[44px]">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
+                @if(!request('search') && !request('franchise_id'))
+                    <button onclick="reorder({{ $song->id }}, {{ max(1, $song->peringkat - 1) }})" class="flex-1 bg-gray-800/50 hover:bg-[#9D00FF]/20 text-gray-400 hover:text-[#9D00FF] py-2 rounded-xl flex items-center justify-center transition-colors min-h-[44px]">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                    </button>
+                    <button onclick="reorder({{ $song->id }}, {{ $song->peringkat + 1 }})" class="flex-1 bg-gray-800/50 hover:bg-[#9D00FF]/20 text-gray-400 hover:text-[#9D00FF] py-2 rounded-xl flex items-center justify-center transition-colors min-h-[44px]">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                @endif
                 <a href="{{ route('admin.songs.edit', $song) }}" class="flex-1 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-500 py-2 rounded-xl flex items-center justify-center transition-colors min-h-[44px]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                 </a>
@@ -149,6 +168,11 @@
             Belum ada lagu untuk kategori ini.
         </div>
     @endforelse
+</div>
+
+<!-- Pagination (Desktop & Mobile) -->
+<div class="mt-8 pagination-wrapper">
+    {{ $songs->links() }}
 </div>
 
 <!-- Import Modal -->

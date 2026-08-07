@@ -8,6 +8,60 @@
     </div>
 </div>
 
+<!-- Filter Form -->
+<form method="GET" action="{{ route('admin.guest_rates.index') }}" class="mb-6 bg-gray-900/60 p-5 rounded-2xl border border-gray-800 flex flex-col gap-4 shadow-lg">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Search -->
+        <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Pencarian</label>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama guest..." class="w-full bg-black/50 border border-gray-700 text-white rounded-xl px-4 py-2.5 focus:border-[#9D00FF] focus:ring-1 focus:ring-[#9D00FF] outline-none transition-all">
+        </div>
+        
+        <!-- Tipe Rate -->
+        <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tipe Rate</label>
+            <select name="tipe_rate" class="w-full bg-black/50 border border-gray-700 text-white rounded-xl px-4 py-2.5 focus:border-[#9D00FF] focus:ring-1 focus:ring-[#9D00FF] outline-none appearance-none transition-all">
+                <option value="">Semua Tipe</option>
+                <option value="opening" {{ request('tipe_rate') == 'opening' ? 'selected' : '' }}>Opening</option>
+                <option value="ending" {{ request('tipe_rate') == 'ending' ? 'selected' : '' }}>Ending</option>
+                <option value="movie" {{ request('tipe_rate') == 'movie' ? 'selected' : '' }}>Movie</option>
+                <option value="all" {{ request('tipe_rate') == 'all' ? 'selected' : '' }}>All (Campur)</option>
+            </select>
+        </div>
+
+        <!-- Limit Top -->
+        <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Limit Top</label>
+            <select name="limit_top" class="w-full bg-black/50 border border-gray-700 text-white rounded-xl px-4 py-2.5 focus:border-[#9D00FF] focus:ring-1 focus:ring-[#9D00FF] outline-none appearance-none transition-all">
+                <option value="">Semua Limit</option>
+                <option value="10" {{ request('limit_top') == '10' ? 'selected' : '' }}>Top 10</option>
+                <option value="25" {{ request('limit_top') == '25' ? 'selected' : '' }}>Top 25</option>
+                <option value="50" {{ request('limit_top') == '50' ? 'selected' : '' }}>Top 50</option>
+                <option value="100" {{ request('limit_top') == '100' ? 'selected' : '' }}>Top 100</option>
+            </select>
+        </div>
+
+        <!-- Order -->
+        <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Urutkan</label>
+            <select name="order" class="w-full bg-black/50 border border-gray-700 text-white rounded-xl px-4 py-2.5 focus:border-[#9D00FF] focus:ring-1 focus:ring-[#9D00FF] outline-none appearance-none transition-all">
+                <option value="newest" {{ request('order') == 'newest' || !request()->has('order') ? 'selected' : '' }}>Terbaru</option>
+                <option value="highest" {{ request('order') == 'highest' ? 'selected' : '' }}>Rata-Rata Skor Tertinggi</option>
+                <option value="lowest" {{ request('order') == 'lowest' ? 'selected' : '' }}>Rata-Rata Skor Terendah</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="flex flex-col md:flex-row justify-end gap-3 mt-2 border-t border-gray-800/50 pt-4">
+        <a href="{{ route('admin.guest_rates.index') }}" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-6 py-2.5 rounded-xl font-bold transition-all text-center flex items-center justify-center gap-2">
+            Reset Filter
+        </a>
+        <button type="submit" class="bg-[#9D00FF] hover:bg-[#b033ff] text-white px-8 py-2.5 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(157,0,255,0.4)] flex items-center justify-center gap-2">
+            Terapkan Filter
+        </button>
+    </div>
+</form>
+
 <div class="bg-gray-900/60 backdrop-blur-md border border-gray-800 rounded-2xl shadow-xl overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">

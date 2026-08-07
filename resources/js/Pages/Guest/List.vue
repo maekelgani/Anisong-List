@@ -11,8 +11,9 @@ const props = defineProps({
 });
 
 const songs = ref([]);
+const pagination = ref({});
 const search = ref('');
-const typeFilter = ref('opening'); // Default to opening based on implementation plan
+const typeFilter = ref('opening');
 const activeSongDetail = ref(null);
 
 const mouseX = ref(0);
@@ -23,17 +24,29 @@ const handleMouseMove = (e) => {
     mouseY.value = e.clientY;
 };
 
-const fetchSongs = async () => {
+const fetchSongs = async (page = 1) => {
     try {
         const response = await axios.get('/api/songs', {
             params: {
                 search: search.value,
-                tipe: typeFilter.value
+                tipe: typeFilter.value,
+                page: page
             }
         });
-        songs.value = response.data;
+        songs.value = response.data.data;
+        pagination.value = {
+            current_page: response.data.current_page,
+            last_page: response.data.last_page,
+            total: response.data.total
+        };
     } catch (error) {
         console.error(error);
+    }
+};
+
+const changePage = (page) => {
+    if (page >= 1 && page <= pagination.value.last_page) {
+        fetchSongs(page);
     }
 };
 
@@ -61,22 +74,23 @@ const setTypeFilter = (type) => {
 
 const getEmbedUrl = (url) => {
     if (!url) return '';
+    
+    // Check Google Drive
+    const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^\/]+)/);
+    if (driveMatch) {
+        return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+    }
+
     if (url.includes('/embed/')) return url;
     
-    try {
-        if (url.includes('youtube.com/watch')) {
-            const urlObj = new URL(url);
-            const v = urlObj.searchParams.get('v');
-            return v ? `https://www.youtube.com/embed/${v}` : url;
-        }
-        if (url.includes('youtu.be/')) {
-            const urlObj = new URL(url);
-            const v = urlObj.pathname.substring(1);
-            return v ? `https://www.youtube.com/embed/${v}` : url;
-        }
-    } catch (e) {
-        return url;
+    // Regular expression to match standard youtube.com, youtu.be, shorts, and extract the video ID
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    
+    if (match && match[2].length === 11) {
+        return `https://www.youtube.com/embed/${match[2]}`;
     }
+    
     return url;
 };
 </script>
@@ -119,27 +133,9 @@ const getEmbedUrl = (url) => {
                 
                 <!-- Pill Tabs -->
                 <div class="flex justify-center bg-gray-900/50 rounded-xl p-2 border border-gray-800 gap-2 overflow-x-auto">
-                    <button 
-                        @click="setTypeFilter('opening')" 
-                        class="px-6 py-2 rounded-lg font-bold transition-all whitespace-nowrap"
-                        :class="typeFilter === 'opening' ? 'bg-[#9D00FF]/20 text-[#9D00FF] border border-[#9D00FF]/50 shadow-[0_0_15px_rgba(157,0,255,0.6)]' : 'text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent'"
-                    >
-                        Opening (OP)
-                    </button>
-                    <button 
-                        @click="setTypeFilter('ending')" 
-                        class="px-6 py-2 rounded-lg font-bold transition-all whitespace-nowrap"
-                        :class="typeFilter === 'ending' ? 'bg-[#9D00FF]/20 text-[#9D00FF] border border-[#9D00FF]/50 shadow-[0_0_15px_rgba(157,0,255,0.6)]' : 'text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent'"
-                    >
-                        Ending (ED)
-                    </button>
-                    <button 
-                        @click="setTypeFilter('movie')" 
-                        class="px-6 py-2 rounded-lg font-bold transition-all whitespace-nowrap"
-                        :class="typeFilter === 'movie' ? 'bg-[#9D00FF]/20 text-[#9D00FF] border border-[#9D00FF]/50 shadow-[0_0_15px_rgba(157,0,255,0.6)]' : 'text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent'"
-                    >
-                        Movie Theme
-                    </button>
+                    <button @click="typeFilter = 'opening'; fetchSongs(1)" :class="typeFilter === 'opening' ? 'bg-[#9D00FF] text-white shadow-[0_0_15px_rgba(157,0,255,0.4)]' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'" class="px-6 py-2.5 rounded-full font-bold transition-all whitespace-nowrap">Opening (OP)</button>
+                    <button @click="typeFilter = 'ending'; fetchSongs(1)" :class="typeFilter === 'ending' ? 'bg-[#9D00FF] text-white shadow-[0_0_15px_rgba(157,0,255,0.4)]' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'" class="px-6 py-2.5 rounded-full font-bold transition-all whitespace-nowrap">Ending (ED)</button>
+                    <button @click="typeFilter = 'movie'; fetchSongs(1)" :class="typeFilter === 'movie' ? 'bg-[#9D00FF] text-white shadow-[0_0_15px_rgba(157,0,255,0.4)]' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'" class="px-6 py-2.5 rounded-full font-bold transition-all whitespace-nowrap">Movie / Insert</button>
                 </div>
 
                 <!-- Search Input -->
@@ -149,10 +145,10 @@ const getEmbedUrl = (url) => {
                     </svg>
                     <input 
                         v-model="search" 
-                        @input="fetchSongs" 
+                        @input="fetchSongs(1)" 
                         type="text" 
-                        placeholder="Cari lagu, penyanyi, anime..." 
-                        class="w-full bg-gray-950/50 border border-gray-700 rounded-lg pl-12 pr-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-[#9D00FF] focus:ring-1 focus:ring-[#9D00FF] transition-colors"
+                        placeholder="Cari lagu, anime, penyanyi..." 
+                        class="w-full bg-black/50 border border-[#9D00FF]/30 text-white rounded-xl pl-12 pr-4 py-4 focus:outline-none focus:border-[#9D00FF] focus:ring-1 focus:ring-[#9D00FF] transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"
                     >
                 </div>
                 
@@ -204,6 +200,37 @@ const getEmbedUrl = (url) => {
                 
                 <div v-if="songs.length === 0" class="text-center py-20 text-gray-500">
                     Tidak ada lagu yang ditemukan untuk kategori ini.
+                </div>
+
+                <!-- Pagination -->
+                <div v-if="pagination.last_page > 1" class="mt-12 flex justify-center items-center gap-2">
+                    <button 
+                        @click="changePage(pagination.current_page - 1)" 
+                        :disabled="pagination.current_page === 1"
+                        class="px-4 py-2 rounded-lg font-bold transition-all"
+                        :class="pagination.current_page === 1 ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-gray-800 text-gray-300 hover:bg-[#9D00FF] hover:text-white border border-gray-700 hover:border-[#9D00FF] shadow-sm hover:shadow-[0_0_15px_rgba(157,0,255,0.4)]'"
+                    >
+                        Prev
+                    </button>
+                    
+                    <template v-for="page in pagination.last_page" :key="page">
+                        <button 
+                            @click="changePage(page)"
+                            class="w-10 h-10 rounded-lg font-bold transition-all flex items-center justify-center border"
+                            :class="page === pagination.current_page ? 'bg-[#9D00FF] text-white border-[#9D00FF] shadow-[0_0_15px_rgba(157,0,255,0.5)]' : 'bg-gray-800/50 text-gray-400 border-gray-700 hover:bg-gray-700 hover:text-white'"
+                        >
+                            {{ page }}
+                        </button>
+                    </template>
+
+                    <button 
+                        @click="changePage(pagination.current_page + 1)" 
+                        :disabled="pagination.current_page === pagination.last_page"
+                        class="px-4 py-2 rounded-lg font-bold transition-all"
+                        :class="pagination.current_page === pagination.last_page ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-gray-800 text-gray-300 hover:bg-[#9D00FF] hover:text-white border border-gray-700 hover:border-[#9D00FF] shadow-sm hover:shadow-[0_0_15px_rgba(157,0,255,0.4)]'"
+                    >
+                        Next
+                    </button>
                 </div>
             </div>
         </main>
@@ -283,7 +310,10 @@ const getEmbedUrl = (url) => {
                             allowfullscreen>
                         </iframe>
                     </div>
-                    <div v-else class="aspect-video w-full rounded-xl overflow-hidden bg-black border border-gray-800 flex items-center justify-center flex-col gap-3 text-gray-600">
+                    <a v-if="activeSongDetail.link_video" :href="activeSongDetail.link_video" target="_blank" class="block text-center mt-3 text-xs text-gray-500 hover:text-[#9D00FF] transition-colors">
+                        Video YT tidak dapat diputar? Klik link berikut untuk memutarnya dihalaman yt! <span class="underline font-bold text-[#9D00FF]">Klik disini</span>
+                    </a>
+                    <div v-if="!activeSongDetail.link_video" class="aspect-video w-full rounded-xl overflow-hidden bg-black border border-gray-800 flex items-center justify-center flex-col gap-3 text-gray-600">
                         <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                         <span class="font-bold">Video tidak tersedia</span>
                     </div>

@@ -8,10 +8,37 @@ use Illuminate\Http\Request;
 
 class GuestRateAdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Get all sessions with their basic info
-        $sessions = GuestRatingSession::latest()->paginate(15);
+        $query = GuestRatingSession::query();
+
+        // Search by nama
+        if ($request->has('search') && $request->search != '') {
+            $query->where('nama_guest', 'like', '%' . $request->search . '%');
+        }
+
+        // Filter by tipe_rate
+        if ($request->has('tipe_rate') && $request->tipe_rate != '') {
+            $query->where('tipe_rate', $request->tipe_rate);
+        }
+
+        // Filter by limit_top
+        if ($request->has('limit_top') && $request->limit_top != '') {
+            $query->where('limit_top', $request->limit_top);
+        }
+
+        // Order
+        $order = $request->input('order', 'newest');
+        if ($order === 'highest') {
+            $query->orderBy('rata_rata_score', 'desc');
+        } elseif ($order === 'lowest') {
+            $query->orderBy('rata_rata_score', 'asc');
+        } else {
+            // Default to newest
+            $query->latest();
+        }
+
+        $sessions = $query->paginate(15)->appends($request->query());
         return view('admin.guest_rates.index', compact('sessions'));
     }
 

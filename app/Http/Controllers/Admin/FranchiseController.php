@@ -8,9 +8,15 @@ use Illuminate\Http\Request;
 
 class FranchiseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $franchises = Franchise::withCount('songs')->latest()->paginate(10);
+        $query = Franchise::withCount('songs')->latest();
+
+        if ($request->has('search') && $request->search != '') {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
+
+        $franchises = $query->paginate(10)->appends($request->query());
         return view('admin.franchises.index', compact('franchises'));
     }
 

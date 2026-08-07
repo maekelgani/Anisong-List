@@ -140,10 +140,10 @@ onUnmounted(() => {
                     </div>
 
                     <div class="text-center md:text-left">
-                        <h3 class="text-2xl font-bold text-gray-100 mb-2">M. Mahdi F G.</h3>
+                        <h3 class="text-2xl font-bold text-gray-100 mb-2">DaremonAxe2</h3>
                         <p class="text-[#9D00FF] font-medium mb-4">Fullstack Developer</p>
                         <p class="text-gray-400 leading-relaxed mb-6">
-                            Saya adalah seorang web developer yang berfokus pada ekosistem Laravel dan Vue.js. Aplikasi ini dibangun sebagai bagian dari portofolio untuk mendemonstrasikan perpaduan antara desain antarmuka modern (Neon Dark Theme) dan performa backend yang solid.
+                            Saya adalah seorang Mahasiswa aktif tahun terakhir, dan juga sebagai Junior Web Developer. Memiliki minat dan ketertarikan dibidang teknologi terutama pada pengembangan web dan mobile.
                         </p>
                     </div>
                 </div>

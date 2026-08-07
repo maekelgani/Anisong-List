@@ -13,6 +13,13 @@
         </button>
     </div>
 
+    <!-- Filter Form -->
+    <form method="GET" action="{{ route('admin.franchises.index') }}" class="mb-6 flex flex-col md:flex-row gap-4 bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama franchise..." class="flex-1 bg-black/50 border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-[#9D00FF] focus:ring-1 focus:ring-[#9D00FF] outline-none">
+        <button type="submit" class="bg-[#9D00FF] hover:bg-[#b033ff] text-white px-6 py-2 rounded-lg font-bold transition-all shadow-[0_0_10px_rgba(157,0,255,0.4)] w-full md:w-auto">Cari</button>
+        <a href="{{ route('admin.franchises.index') }}" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-6 py-2 rounded-lg font-bold transition-all w-full md:w-auto text-center flex items-center justify-center">Reset</a>
+    </form>
+
     <!-- Table Container (Desktop) -->
     <div class="hidden md:block bg-gray-900/60 backdrop-blur-md border border-gray-800 rounded-2xl shadow-xl overflow-hidden">
         <div class="overflow-x-auto">

@@ -19,19 +19,32 @@ class SongController extends Controller
         return redirect()->route('admin.songs.type', 'opening');
     }
 
-    public function indexByType($tipe)
+    public function indexByType(Request $request, $tipe)
     {
         $allowedTypes = ['opening', 'ending', 'movie'];
         if (!in_array($tipe, $allowedTypes)) {
             $tipe = 'opening';
         }
 
-        $songs = Song::with('franchise')
-            ->where('tipe', $tipe)
-            ->orderBy('peringkat')
-            ->get();
+        $query = Song::with('franchise')->where('tipe', $tipe);
 
-        return view('admin.songs.index', compact('songs', 'tipe'));
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('judul_lagu', 'like', "%{$search}%")
+                  ->orWhere('penyanyi', 'like', "%{$search}%")
+                  ->orWhere('anime_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('franchise_id') && $request->franchise_id != '') {
+            $query->where('franchise_id', $request->franchise_id);
+        }
+
+        $songs = $query->orderBy('peringkat')->paginate(10)->appends($request->query());
+        $franchises = Franchise::orderBy('nama')->get();
+
+        return view('admin.songs.index', compact('songs', 'tipe', 'franchises'));
     }
 
     public function create()

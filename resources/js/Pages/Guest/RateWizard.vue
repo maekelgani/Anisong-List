@@ -6,6 +6,28 @@ const props = defineProps({
     songs: Array
 });
 
+const getEmbedUrl = (url) => {
+    if (!url) return '';
+    
+    // Check Google Drive
+    const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^\/]+)/);
+    if (driveMatch) {
+        return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+    }
+
+    if (url.includes('/embed/')) return url;
+    
+    // Regular expression to match standard youtube.com, youtu.be, shorts, and extract the video ID
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    
+    if (match && match[2].length === 11) {
+        return `https://www.youtube.com/embed/${match[2]}`;
+    }
+    
+    return url;
+};
+
 // State
 const step = ref(1);
 const form = ref({
@@ -210,13 +232,16 @@ onUnmounted(() => window.removeEventListener('mousemove', handleMouseMove));
                         {{ currentIndex + 1 }} / {{ filteredSongs.length }}
                     </div>
                     <div class="aspect-video w-full">
-                        <iframe v-if="currentSong.link_video" :src="currentSong.link_video" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
-                        <div v-else class="w-full h-full flex flex-col items-center justify-center text-gray-600">
+                        <iframe v-if="currentSong.link_video" :src="getEmbedUrl(currentSong.link_video)" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                        <div v-if="!currentSong.link_video" class="w-full h-full flex flex-col items-center justify-center text-gray-600">
                             <svg class="w-16 h-16 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                             Video Unavailable
                         </div>
                     </div>
                 </div>
+                <a v-if="currentSong.link_video" :href="currentSong.link_video" target="_blank" class="block text-center mt-2 text-sm text-gray-400 hover:text-[#9D00FF] transition-colors">
+                    Video YT tidak dapat diputar? Klik link berikut untuk memutarnya dihalaman yt! <span class="underline font-bold text-[#9D00FF]">Klik disini</span>
+                </a>
 
                 <!-- Song Info & Slider -->
                 <div class="w-full bg-gray-900/60 backdrop-blur-xl border border-gray-800 rounded-2xl p-6 md:p-8 flex flex-col items-center shadow-lg relative overflow-hidden">

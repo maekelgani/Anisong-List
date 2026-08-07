@@ -40,6 +40,6 @@ class GuestSongController extends Controller
             $query->where('tipe', $request->tipe);
         }
 
-        return response()->json($query->get());
+        return response()->json($query->paginate(10));
     }
 }
